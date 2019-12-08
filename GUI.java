@@ -35,32 +35,6 @@ public class GUI extends JFrame {
         for (int i = 0; i < array.length; i++)
             tableModel.addRow(array[i]);
 
-        // Создание таблицы на основании модели данных
-        table1 = new JTable(tableModel);
-        // Создание кнопки добавления строки таблицы
-        JButton add = new JButton("Добавить");
-        add.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Номер выделенной строки
-                int idx = table1.getSelectedRow();
-                // Вставка новой строки после выделенной
-                for (int n = idx + 1; n < tableModel.getRowCount(); n++)
-                    tableModel.setValueAt(n + 2, n, 0);
-                tableModel.insertRow(idx + 1, new String[] { Integer.toString(idx + 2), "", "", "" });
-            }
-        });
-        // Создание кнопки удаления строки таблицы
-        JButton remove = new JButton("Удалить");
-        remove.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Номер выделенной строки
-                int idx = table1.getSelectedRow();
-                // Удаление выделенной строки
-                for (int n = idx + 1; n < tableModel.getRowCount(); n++)
-                    tableModel.setValueAt(n, n, 0);
-                tableModel.removeRow(idx);
-            }
-        });
 
         // this.setBounds(500,500,500,500);
         this.setLocation(725, 300);
@@ -87,10 +61,9 @@ public class GUI extends JFrame {
                 array = turJornal.putTouristJournal();
                 for (int i = 0; i < array.length; i++)
                     tableModel.addRow(array[i]);
+                table1.setModel(tableModel);
 
-                table1 = new JTable(tableModel);
                 Box contents = new Box(BoxLayout.Y_AXIS);
-                contents.add(new JScrollPane(table1));
                 getContentPane().add(contents);
             }
         });
@@ -106,10 +79,9 @@ public class GUI extends JFrame {
                 for (int i = 0; i < array.length; i++)
                     tableModel.addRow(array[i]);
 
-                table1 = new JTable(tableModel);
+                table1.setModel(tableModel);
                 table1.setAutoCreateRowSorter(true);
                 Box contents = new Box(BoxLayout.Y_AXIS);
-                contents.add(new JScrollPane(table1));
                 getContentPane().add(contents);
             }
         });
@@ -125,10 +97,9 @@ public class GUI extends JFrame {
                 for (int i = 0; i < array.length; i++)
                     tableModel.addRow(array[i]);
 
-                table1 = new JTable(tableModel);
+                table1.setModel(tableModel);
                 table1.setAutoCreateRowSorter(true);
                 Box contents = new Box(BoxLayout.Y_AXIS);
-                contents.add(new JScrollPane(table1));
                 getContentPane().add(contents);
             }
         });
@@ -144,10 +115,9 @@ public class GUI extends JFrame {
                 for (int i = 0; i < array.length; i++)
                     tableModel.addRow(array[i]);
 
-                table1 = new JTable(tableModel);
+                table1.setModel(tableModel);
                 table1.setAutoCreateRowSorter(true);
                 Box contents = new Box(BoxLayout.Y_AXIS);
-                contents.add(new JScrollPane(table1));
                 getContentPane().add(contents);
             }
         });
@@ -163,13 +133,12 @@ public class GUI extends JFrame {
                 System.out.println(fd.getDirectory());
                 
                 TouristJournal turJornal = new TouristJournal((fd.getFile()));
-                BufferedReader inp = null;
+                BufferedReader open = null;
                 String[] data = new String[0];
                 String line;
                 try {
-                    new FileOutputStream(fd.getDirectory());
-                    inp = new BufferedReader(new FileReader(fd.getDirectory()));
-                    while ((line = inp.readLine()) != null) {
+                    open = new BufferedReader(new FileReader(String.format("%s%s", fd.getDirectory(), fd.getFile())));
+                    while ((line = open.readLine()) != null) {
                         line = line.trim();
                         if (line.equals(""))
                             continue;
@@ -184,8 +153,10 @@ public class GUI extends JFrame {
                             data[0] = "0";
                         }
                         turJornal.addTourist(
-                                new TouristKey(Integer.parseInt(data[3]), data[1], Integer.parseInt(data[2])),
-                                Integer.parseInt(data[2]));
+                                new TouristKey(Integer.parseInt(data[0]), 
+                                data[1], 
+                                Integer.parseInt(data[2])),
+                                Integer.parseInt(data[0]));
 
                     }
                 } catch (IOException exception) {
@@ -196,9 +167,9 @@ public class GUI extends JFrame {
                 array = turJornal.putTouristJournal();
                 for (int i = 0; i < array.length; i++)
                     tableModel.addRow(array[i]);
-                table1 = new JTable(tableModel);
+                table1.setModel(tableModel);
+
                 Box contents = new Box(BoxLayout.Y_AXIS);
-                contents.add(new JScrollPane(table1));
                 getContentPane().add(contents);
 
             }
@@ -211,16 +182,12 @@ public class GUI extends JFrame {
                 Writer writer = null;
                 try {
                    
-                    FileDialog fd = new FileDialog(frame, "Сохранить в:", FileDialog.LOAD);
+                    FileDialog fd = new FileDialog(frame, "Сохранить", FileDialog.ABORT);
                     fd.setVisible(true);
                     System.out.println(fd.getDirectory());
-                    writer = new BufferedWriter(new FileWriter("base.txt"));
-
-                    // writer.append((turJornal.returnTouristJournalarray()));
-                    // НЕ ЕБИ СЕБЕ МОЗГ, ПРОСТО НАПИШИ ЧТЕНИЕ ПО ЭЛЕМЕНТУ В ДВУМЕРНОМ МАССИВЕ С
-                    // ЗАПИСЬЮ В ФАЙЛ!
-                    // Сделяль
-                    for (int n = 0; n < tableModel.getRowCount(); n++) { // тут хр. массив [][] из которого берем данныt
+                    writer = new BufferedWriter(new FileWriter((String.format("%s%s%s", fd.getDirectory(), turJornal.getName(), ".txt" ))));
+                    
+                    for (int n = 0; n < tableModel.getRowCount(); n++) { // тут хр. массив [][] из которого берем данны t
                         StringBuilder sb = new StringBuilder();
                         for (int _n = 1; _n < tableModel.getColumnCount(); _n++) {
                             Object data = tableModel.getValueAt(n, _n);
@@ -276,11 +243,13 @@ public class GUI extends JFrame {
                         + Integer.toString(turJornal.quantityItem());
                 JLabel statusLabel = new JLabel(countries);
                 
-                statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
-                getContentPane().add(statusLabel);
-                table1 = new JTable(tableModel);
+                tableModel.setRowCount(0);
+                array = turJornal.putTouristJournal();
+                for (int i = 0; i < array.length; i++)
+                    tableModel.addRow(array[i]);
+                table1.setModel(tableModel);
+
                 Box contents = new Box(BoxLayout.Y_AXIS);
-                contents.add(new JScrollPane(table1));
                 getContentPane().add(contents);
                 
             }
@@ -295,6 +264,33 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.exit(0); // Выход из программы
+            }
+        });
+
+        // Создание таблицы на основании модели данных
+        table1 = new JTable(tableModel);
+        // Создание кнопки добавления строки таблицы
+        JButton add = new JButton("Добавить");
+        add.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Номер выделенной строки
+                int idx = table1.getSelectedRow();
+                // Вставка новой строки после выделенной
+                for (int n = idx + 1; n < tableModel.getRowCount(); n++)
+                    tableModel.setValueAt(n + 2, n, 0);
+                tableModel.insertRow(idx + 1, new String[] { Integer.toString(idx + 2), "", "", "" });
+            }
+        });
+        // Создание кнопки удаления строки таблицы
+        JButton remove = new JButton("Удалить");
+        remove.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Номер выделенной строки
+                int idx = table1.getSelectedRow();
+                // Удаление выделенной строки
+                for (int n = idx + 1; n < tableModel.getRowCount(); n++)
+                    tableModel.setValueAt(n, n, 0);
+                tableModel.removeRow(idx);
             }
         });
 
