@@ -6,12 +6,11 @@ import java.io.Writer;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 
-import javax.swing.table.DefaultTableModel;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
+import javax.swing.table.*;
 
 public class GUI extends JFrame {
     private DefaultTableModel tableModel;
@@ -19,7 +18,9 @@ public class GUI extends JFrame {
     JFrame frame = new JFrame();
     Object[][] array = new String[0][0];
     // Заголовки столбцов
-    private Object[] columnsHeader = new String[] { "#", "Шифр маршрута", "Страна", "Стоимость" };
+    private Object[] columnsHeader = new String[] { "№", "Шифр маршрута", "Страна", "Стоимость" };
+
+    private DefaultTableCellRenderer cellRenderer;
 
     public GUI(TouristJournal turJornal) {
         super("Туристические маршруты");
@@ -35,8 +36,11 @@ public class GUI extends JFrame {
         for (int i = 0; i < array.length; i++)
             tableModel.addRow(array[i]);
 
+        String countries = "Всего маршрутов: " + Integer.toString(turJornal.size()) + " | "
+                + Integer.toString(turJornal.quantityItem());
+        JLabel statusLabel = new JLabel(countries);
+        statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
-        // this.setBounds(500,500,500,500);
         this.setLocation(725, 300);
         JMenuBar menuBar = new JMenuBar();
         JMenu file = new JMenu("Файл"); // Кнопка в бар меню
@@ -136,42 +140,46 @@ public class GUI extends JFrame {
                 BufferedReader open = null;
                 String[] data = new String[0];
                 String line;
-                try {
-                    open = new BufferedReader(new FileReader(String.format("%s%s", fd.getDirectory(), fd.getFile())));
-                    while ((line = open.readLine()) != null) {
-                        line = line.trim();
-                        if (line.equals(""))
-                            continue;
-                        data = line.split("\\s+");
-                        if (data[0] == " ") {
-                            data[0] = "0";
-                        }
-                        if (data[1] == " ") {
-                            data[0] = "0";
-                        }
-                        if (data[2] == " ") {
-                            data[0] = "0";
-                        }
-                        turJornal.addTourist(
-                                new TouristKey(Integer.parseInt(data[0]), 
-                                data[1], 
-                                Integer.parseInt(data[2])),
-                                Integer.parseInt(data[0]));
+                if (fd.getDirectory() != null) {
+                    try {
+                        open = new BufferedReader(new FileReader(String.format("%s%s", fd.getDirectory(), fd.getFile())));
+                        while ((line = open.readLine()) != null) {
+                            line = line.trim();
+                            if (line.equals(""))
+                                continue;
+                            data = line.split("\\s+");
+                            if (data[0] == " ") {
+                                data[0] = "0";
+                            }
+                            if (data[1] == " ") {
+                                data[0] = "0";
+                            }
+                            if (data[2] == " ") {
+                                data[0] = "0";
+                            }
+                            turJornal.addTourist(
+                                    new TouristKey(Integer.parseInt(data[0]), 
+                                    data[1], 
+                                    Integer.parseInt(data[2])),
+                                    Integer.parseInt(data[0]));
 
-                    }
-                } catch (IOException exception) {
-                    exception.printStackTrace();
+                        }
+                    } 
+                    catch (IOException exception) {
+                        exception.printStackTrace();}
+
+                    tableModel.setRowCount(0);
+                    array = turJornal.putTouristJournal();
+                    for (int i = 0; i < array.length; i++)
+                        tableModel.addRow(array[i]);
+                    table1.setModel(tableModel);
+
+                    Box contents = new Box(BoxLayout.Y_AXIS);
+                    getContentPane().add(contents);
+                
+                    statusLabel.setText("Всего маршрутов: " + Integer.toString(turJornal.size()) + " | "
+                            + Integer.toString(turJornal.quantityItem()));
                 }
-
-                tableModel.setRowCount(0);
-                array = turJornal.putTouristJournal();
-                for (int i = 0; i < array.length; i++)
-                    tableModel.addRow(array[i]);
-                table1.setModel(tableModel);
-
-                Box contents = new Box(BoxLayout.Y_AXIS);
-                getContentPane().add(contents);
-
             }
         });
 
@@ -182,9 +190,9 @@ public class GUI extends JFrame {
                 Writer writer = null;
                 try {
                    
-                    FileDialog fd = new FileDialog(frame, "Сохранить", FileDialog.ABORT);
+                    FileDialog fd = new FileDialog(frame, "Открыть", FileDialog.SAVE);
                     fd.setVisible(true);
-                    System.out.println(fd.getDirectory());
+
                     writer = new BufferedWriter(new FileWriter((String.format("%s%s%s", fd.getDirectory(), turJornal.getName(), ".txt" ))));
                     
                     for (int n = 0; n < tableModel.getRowCount(); n++) { // тут хр. массив [][] из которого берем данны t
@@ -216,6 +224,8 @@ public class GUI extends JFrame {
             }
         });
 
+
+
         JMenuItem update = file.add(new JMenuItem("Обновление"));
 
         update.addActionListener(new ActionListener() {
@@ -229,7 +239,8 @@ public class GUI extends JFrame {
                         Object data = tableModel.getValueAt(n, _n);
                         if (data == "")
                             array[n][_n] = ("0");
-                        array[n][_n] = (data.toString());
+                        else
+                            array[n][_n] = (data.toString());
                     }
                     turJornal.addTourist(new TouristKey(Integer.parseInt(array[n][1]), array[n][2].toString(),
                             Integer.parseInt(array[n][3])), Integer.parseInt(array[n][3]));
@@ -239,10 +250,6 @@ public class GUI extends JFrame {
                 for (int i = 0; i < array.length; i++)
                     tableModel.addRow(array[i]);
 
-                String countries = "Всего маршрутов: " + Integer.toString(turJornal.size()) + " | "
-                        + Integer.toString(turJornal.quantityItem());
-                JLabel statusLabel = new JLabel(countries);
-                
                 tableModel.setRowCount(0);
                 array = turJornal.putTouristJournal();
                 for (int i = 0; i < array.length; i++)
@@ -251,6 +258,9 @@ public class GUI extends JFrame {
 
                 Box contents = new Box(BoxLayout.Y_AXIS);
                 getContentPane().add(contents);
+
+                statusLabel.setText("Всего маршрутов: " + Integer.toString(turJornal.size()) + " | "
+                        + Integer.toString(turJornal.quantityItem()));
                 
             }
         });
@@ -294,17 +304,20 @@ public class GUI extends JFrame {
             }
         });
 
+        table1.getColumnModel().getColumn(0).setPreferredWidth(3);
+        table1.getColumnModel().getColumn(2).setPreferredWidth(100);
+
+        cellRenderer = new DefaultTableCellRenderer();
+        cellRenderer.setHorizontalAlignment(JLabel.CENTER);
+        table1.getColumnModel().getColumn(0).setCellRenderer(cellRenderer);
+
         frame.setLayout(new BorderLayout());
         JPanel statusPanel = new JPanel();
         statusPanel.setBorder((Border) new BevelBorder(BevelBorder.LOWERED));
         frame.add(statusPanel, BorderLayout.SOUTH);
         statusPanel.setPreferredSize(new Dimension(frame.getWidth(), 16));
         statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
-        String countries = "Всего маршрутов: " + Integer.toString(turJornal.size()) + " | "
-                + Integer.toString(turJornal.quantityItem());
-        JLabel statusLabel = new JLabel(countries);
-        statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
-
+        
         // Размещение таблиц в панели с блочным расположением
         Box contents = new Box(BoxLayout.Y_AXIS);
         contents.add(new JScrollPane(table1));

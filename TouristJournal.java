@@ -159,8 +159,6 @@ public class TouristJournal {
     }
     
     public String[][] putTouristJournal(){
-        System.out.println(name);
-        System.out.printf("%-10s%-10s%-19s%-25s\n","#","Шифр","Страна","Стоимость");
         int i = 1;
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
         
@@ -168,7 +166,6 @@ public class TouristJournal {
         for(Map.Entry<TouristKey, Integer> keyK:setS){
             TouristKey key = keyK.getKey();
             
-            System.out.printf("%-10d%-10d%-19s %s\n", i, key.getId(), key.getTeamCode(),keyK.getValue());
             array[i-1][0] = Integer.toString(i);
             array[i-1][1] = Integer.toString(key.getId());
             array[i-1][2] = key.getTeamCode();
