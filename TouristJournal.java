@@ -1,4 +1,7 @@
+import java.security.Key;
 import java.util.*;
+
+import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 public class TouristJournal {
     private final static String TJOURNAL_FORMAT_STRING = "Страна: %s, стоимость: %d";
@@ -82,6 +85,18 @@ public class TouristJournal {
         return true;
     }
 
+    
+
+    public TouristJournal delete_condition(int cost){
+        TouristJournal subSpoJou = new TouristJournal(String.format(""));
+        Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
+        for(Map.Entry<TouristKey, Integer> keyVal:setS)
+            if(keyVal.getKey().getCost() > cost)
+                subSpoJou.addTourist(keyVal.getKey(), keyVal.getValue());
+        return subSpoJou;
+    }
+
+
      public boolean delSmallerTourist(int id){
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
         Iterator<Map.Entry<TouristKey, Integer>> it = setS.iterator();
@@ -156,6 +171,26 @@ public class TouristJournal {
         for(Map.Entry<TouristKey, Integer> keyVal: setS)
             subSpoJou.addTourist(keyVal.getKey(), keyVal.getValue());
         return subSpoJou;
+    }    
+   
+    public TouristJournal cheapest_trips() {
+        String[] data = new String[0];
+        TouristJournal subSpoJou = new TouristJournal(
+                String.format("%s:\n\t сортировка по возрастанию названию страны и убыванию стоимости", name),
+                new CompTeamAscMonthDesc());
+        String[][] temp_data = subSpoJou.returnTouristJournalarray();
+        
+        subSpoJou.deleteAllT();
+        int n = 0;
+         for (String[] i : temp_data){
+             if (data != i)
+             subSpoJou.addTourist(new TouristKey(Integer.parseInt(temp_data[n][1]), temp_data[n][2].toString(), Integer.parseInt(temp_data[n][3])), Integer.parseInt(temp_data[n][3]));
+            data = i;
+         n++;
+
+                }  
+            n = 0;     
+        return subSpoJou;
     }
     
     public String[][] putTouristJournal(){
@@ -189,5 +224,6 @@ public class TouristJournal {
         }
         return (String[][]) array;
     }
+
  
 }

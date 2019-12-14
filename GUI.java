@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.BufferedWriter;
 
+import javax.swing.JOptionPane;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
@@ -127,6 +128,38 @@ public class GUI extends JFrame {
         });
 
         table.add(sort);
+    
+        JMenuItem delete_condition = file.add(new JMenuItem("Удаление маршрутов меньше заданной цены"));
+
+        delete_condition.addActionListener(new ActionListener() {
+            @Override
+            
+            public void actionPerformed(ActionEvent e) {
+
+
+                while(true){
+                    String input = JOptionPane.showInputDialog("Ничже какого колличеста сумма должна быть:");
+                    if(input.length() > 0){
+                        tableModel.setRowCount(0);
+                        array = turJornal.delete_condition(Integer.parseInt(input)).putTouristJournal();
+                        for (int i = 0; i < array.length; i++)
+                            tableModel.addRow(array[i]);
+
+                        table1.setModel(tableModel);
+                        table1.setAutoCreateRowSorter(true);
+                        Box contents = new Box(BoxLayout.Y_AXIS);
+                        getContentPane().add(contents);
+                        break;
+                    }
+                }
+                
+                
+        }});
+
+        
+
+        table.add(delete_condition);
+        //table.add(cheap_routes);
 
         JMenuItem open = file.add(new JMenuItem("Открыть"));
         open.addActionListener(new ActionListener() { // Действие открытия
@@ -279,6 +312,7 @@ public class GUI extends JFrame {
 
         // Создание таблицы на основании модели данных
         table1 = new JTable(tableModel);
+        table1.setAutoCreateRowSorter(true);
         // Создание кнопки добавления строки таблицы
         JButton add = new JButton("Добавить");
         add.addActionListener(new ActionListener() {
@@ -361,6 +395,6 @@ public class GUI extends JFrame {
             System.out.println(e);
         }
 
-        GUI start = new GUI(turJornal);
+        new GUI(turJornal);
     }
 }
