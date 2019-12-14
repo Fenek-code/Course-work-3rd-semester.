@@ -23,8 +23,10 @@ public class GUI extends JFrame {
 
     private DefaultTableCellRenderer cellRenderer;
 
-    public GUI(TouristJournal turJornal) {
+    public GUI() {
         super("Туристические маршруты");
+
+        TouristJournal turJornal = new TouristJournal("Журнал путевок");
 
         array = turJornal.putTouristJournal();
 
@@ -138,7 +140,7 @@ public class GUI extends JFrame {
 
 
                 while(true){
-                    String input = JOptionPane.showInputDialog("Ничже какого колличеста сумма должна быть:");
+                    String input = JOptionPane.showInputDialog("стоимость маршрута меньше заданной:");
                     if(input.length() > 0){
                         tableModel.setRowCount(0);
                         array = turJornal.delete_condition(Integer.parseInt(input)).putTouristJournal();
@@ -376,25 +378,6 @@ public class GUI extends JFrame {
     }
 
     public static void main(String[] args) {
-
-        TouristJournal turJornal = new TouristJournal("Журнал путевок");
-        BufferedReader inp = null;
-        String[] data = new String[0];
-        String line;
-        try {
-            inp = new BufferedReader(new FileReader("input.txt"));
-            while ((line = inp.readLine()) != null) {
-                line = line.trim();
-                if (line.equals(""))
-                    continue;
-                data = line.split("\\s+");
-                turJornal.addTourist(new TouristKey(Integer.parseInt(data[0]), data[1], Integer.parseInt(data[2])),
-                        Integer.parseInt(data[2]));
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
-        new GUI(turJornal);
+        new GUI();
     }
 }
