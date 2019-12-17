@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.Writer;
@@ -14,7 +15,8 @@ import javax.swing.border.Border;
 import javax.swing.table.*;
 
 public class GUI extends JFrame {
-    private DefaultTableModel tableModel;
+	private static final long serialVersionUID = 1L;
+	private DefaultTableModel tableModel;
     private JTable table1;
     JFrame frame = new JFrame();
     Object[][] array = new String[0][0];
@@ -118,7 +120,7 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
 
                 tableModel.setRowCount(0);
-                array = turJornal.sortTeamAscMonthDesc().putTouristJournal();
+                array = turJornal.sortTeamAsccostDesc().putTouristJournal();
                 for (int i = 0; i < array.length; i++)
                     tableModel.addRow(array[i]);
 
@@ -158,10 +160,7 @@ public class GUI extends JFrame {
                 
         }});
 
-        
-
         table.add(delete_condition);
-        //table.add(cheap_routes);
 
         JMenuItem open = file.add(new JMenuItem("Открыть"));
         open.addActionListener(new ActionListener() { // Действие открытия
@@ -169,7 +168,7 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 FileDialog fd = new FileDialog(frame, "Открыть", FileDialog.LOAD);
                 fd.setVisible(true);
-                System.out.println(fd.getDirectory());
+                
                 
                 TouristJournal turJornal = new TouristJournal((fd.getFile()));
                 BufferedReader open = null;
@@ -365,15 +364,13 @@ public class GUI extends JFrame {
         // Вывод окна на экран
         setSize(500, 500);
         setVisible(true);
-
-        // Вывод окна на экран
         setContentPane(contents);
         getContentPane().add(buttons);
         getContentPane().add(statusLabel);
 
         setSize(700, 500);
         this.setVisible(true); // Программа видна
-        this.setDefaultCloseOperation(this.EXIT_ON_CLOSE); // Кнопка выхода из программы (X)
+        this.setDefaultCloseOperation(GUI.EXIT_ON_CLOSE); // Кнопка выхода из программы (X)
 
     }
 

@@ -1,7 +1,4 @@
-import java.security.Key;
 import java.util.*;
-
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 public class TouristJournal {
     private final static String TJOURNAL_FORMAT_STRING = "Страна: %s, стоимость: %d";
@@ -65,7 +62,7 @@ public class TouristJournal {
         Set<String> quantity = new TreeSet<String>();
         while(it.hasNext()){
             Map.Entry<TouristKey, Integer> keyVal = it.next();
-            quantity.add(keyVal.getKey().getTeamCode());
+            quantity.add(keyVal.getKey().getName());
         }
         return (quantity.size());
     }
@@ -135,13 +132,13 @@ public class TouristJournal {
         TouristJournal subSpoJou = new TouristJournal(String.format("%s: выборка по названию страны %s",name, code));
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
         for(Map.Entry<TouristKey,Integer> keyVal: setS)
-            if(keyVal.getKey().getTeamCode().equals(code))
+            if(keyVal.getKey().getName().equals(code))
                 subSpoJou.addTourist(keyVal.getKey(), keyVal.getValue());
         return subSpoJou;
     }
 
-    public TouristJournal selectTouristMonthData(int id, int month){
-        TouristJournal subSpoJou = new TouristJournal(String.format("%s: выборка по шифру %5d и стоимости %d", name, id, month));
+    public TouristJournal selectTouristcostData(int id, int cost){
+        TouristJournal subSpoJou = new TouristJournal(String.format("%s: выборка по шифру %5d и стоимости %d", name, id, cost));
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
         for(Map.Entry<TouristKey, Integer> keyVal:setS)
             if ((keyVal.getKey().getId() == id))
@@ -158,15 +155,15 @@ public class TouristJournal {
     }
 
     public TouristJournal sortIdAscTeamCodeDesc(){
-        TouristJournal subSpoJou = new TouristJournal(String.format("%s:\n\t сортировка по возрастанию страны и убыванию названия страны", name), new CompIdAscTeamCodeDesc());
+        TouristJournal subSpoJou = new TouristJournal(String.format("%s:\n\t сортировка по возрастанию страны и убыванию названия страны", name), new CompNameDesc());
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
         for(Map.Entry<TouristKey, Integer> keyVal: setS)
             subSpoJou.addTourist(keyVal.getKey(), keyVal.getValue());
         return subSpoJou;
     }
 
-    public TouristJournal sortTeamAscMonthDesc() {
-        TouristJournal subSpoJou = new TouristJournal(String.format("%s:\n\t сортировка по возрастанию названию страны и убыванию стоимости", name), new CompTeamAscMonthDesc());
+    public TouristJournal sortTeamAsccostDesc() {
+        TouristJournal subSpoJou = new TouristJournal(String.format("%s:\n\t сортировка по возрастанию названию страны и убыванию стоимости", name), new CompCostDesc());
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
         for(Map.Entry<TouristKey, Integer> keyVal: setS)
             subSpoJou.addTourist(keyVal.getKey(), keyVal.getValue());
@@ -177,7 +174,7 @@ public class TouristJournal {
         String[] data = new String[0];
         TouristJournal subSpoJou = new TouristJournal(
                 String.format("%s:\n\t сортировка по возрастанию названию страны и убыванию стоимости", name),
-                new CompTeamAscMonthDesc());
+                new CompCostDesc());
         String[][] temp_data = subSpoJou.returnTouristJournalarray();
         
         subSpoJou.deleteAllT();
@@ -203,7 +200,7 @@ public class TouristJournal {
             
             array[i-1][0] = Integer.toString(i);
             array[i-1][1] = Integer.toString(key.getId());
-            array[i-1][2] = key.getTeamCode();
+            array[i-1][2] = key.getName();
             array[i-1][3] = Integer.toString(keyK.getValue());
             i = i+1;
         }
@@ -218,7 +215,7 @@ public class TouristJournal {
             TouristKey key = keyK.getKey();
             array[i-1][0] = Integer.toString(i);
             array[i-1][1] = Integer.toString(key.getId());
-            array[i-1][2] = key.getTeamCode();
+            array[i-1][2] = key.getName();
             array[i-1][3] = Integer.toString(keyK.getValue());
             i = i+1;
         }

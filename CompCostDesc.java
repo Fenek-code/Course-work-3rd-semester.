@@ -1,6 +1,6 @@
 import java.util.Comparator;
 
-public class CompTeamAscMonthDesc implements Comparator<TouristKey> {
+public class CompCostDesc implements Comparator<TouristKey> {
     public int compare(TouristKey key1, TouristKey key2){
         int month1 = key1.getId();
         int month2 = key2.getId();
