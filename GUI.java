@@ -59,6 +59,7 @@ public class GUI extends JFrame {
         this.revalidate();
 
         JMenu sort = new JMenu("Сортировка");
+        JMenu function = new JMenu("Дополнительные функции");
 
         JMenuItem standartSort = sort.add(new JMenuItem("Стандарт"));
 
@@ -102,12 +103,11 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
 
                 tableModel.setRowCount(0);
-                array = turJornal.sortIdAscTeamCodeDesc().putTouristJournal();
+                array = turJornal.sortNameDesc().putTouristJournal();
                 for (int i = 0; i < array.length; i++)
                     tableModel.addRow(array[i]);
-
                 table1.setModel(tableModel);
-                table1.setAutoCreateRowSorter(true);
+
                 Box contents = new Box(BoxLayout.Y_AXIS);
                 getContentPane().add(contents);
             }
@@ -120,20 +120,20 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
 
                 tableModel.setRowCount(0);
-                array = turJornal.sortTeamAsccostDesc().putTouristJournal();
+                array = turJornal.sortScoreDesc().putTouristJournal();
                 for (int i = 0; i < array.length; i++)
                     tableModel.addRow(array[i]);
-
                 table1.setModel(tableModel);
-                table1.setAutoCreateRowSorter(true);
+
                 Box contents = new Box(BoxLayout.Y_AXIS);
                 getContentPane().add(contents);
             }
         });
 
+        table.add(function);
         table.add(sort);
     
-        JMenuItem delete_condition = file.add(new JMenuItem("Удаление маршрутов меньше заданной цены"));
+        JMenuItem delete_condition = function.add(new JMenuItem("Удаление маршрутов меньше заданной цены"));
 
         delete_condition.addActionListener(new ActionListener() {
             @Override
@@ -160,7 +160,27 @@ public class GUI extends JFrame {
                 
         }});
 
-        table.add(delete_condition);
+        function.add(delete_condition);
+
+        JMenuItem low = function.add(new JMenuItem("Минимум по странам"));
+
+        low.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                tableModel.setRowCount(0);
+                array = turJornal.sortNameDesc().sortCostDesc().putTouristJournal();
+                for (int i = 0; i < array.length; i++)
+                    tableModel.addRow(array[i]);
+
+                table1.setModel(tableModel);
+                table1.setAutoCreateRowSorter(true);
+                Box contents = new Box(BoxLayout.Y_AXIS);
+                getContentPane().add(contents);
+            }
+        });
+
+        function.add(low);
 
         JMenuItem open = file.add(new JMenuItem("Открыть"));
         open.addActionListener(new ActionListener() { // Действие открытия
@@ -371,7 +391,6 @@ public class GUI extends JFrame {
         setSize(700, 500);
         this.setVisible(true); // Программа видна
         this.setDefaultCloseOperation(GUI.EXIT_ON_CLOSE); // Кнопка выхода из программы (X)
-
     }
 
     public static void main(String[] args) {

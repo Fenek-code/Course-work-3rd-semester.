@@ -154,7 +154,7 @@ public class TouristJournal {
         return subSpoJou;
     }
 
-    public TouristJournal sortIdAscTeamCodeDesc(){
+    public TouristJournal sortNameDesc(){
         TouristJournal subSpoJou = new TouristJournal(String.format("%s:\n\t сортировка по возрастанию страны и убыванию названия страны", name), new CompNameDesc());
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
         for(Map.Entry<TouristKey, Integer> keyVal: setS)
@@ -162,7 +162,7 @@ public class TouristJournal {
         return subSpoJou;
     }
 
-    public TouristJournal sortTeamAsccostDesc() {
+    public TouristJournal sortCostDesc() {
         TouristJournal subSpoJou = new TouristJournal(String.format("%s:\n\t сортировка по возрастанию названию страны и убыванию стоимости", name), new CompCostDesc());
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
         for(Map.Entry<TouristKey, Integer> keyVal: setS)

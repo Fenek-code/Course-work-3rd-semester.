@@ -7,6 +7,7 @@ public class CompNameDesc implements Comparator<TouristKey> {
         
         if(code1.compareTo(code2) < 0) return 1;
         if(code1.compareTo(code2) > 0) return -1;
+        
         return 0;
     }
 }
