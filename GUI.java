@@ -1,15 +1,8 @@
 import java.awt.*;
 import java.awt.event.*;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.Writer;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.BufferedWriter;
-
-import javax.swing.JOptionPane;
+import java.io.*;
 import javax.swing.*;
+
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.table.*;
@@ -25,11 +18,18 @@ public class GUI extends JFrame {
 
     private DefaultTableCellRenderer cellRenderer;
 
+    TouristJournal turJornal = new TouristJournal("Journal");
+    
+    String get_panel_info() {
+        return ("Журнал: " 
+            + turJornal.getName() 
+            + "  |  Всего стран: " 
+            + Integer.toString(turJornal.quantityItem()) + "/"
+            + Integer.toString(turJornal.size()));
+    }
     public GUI() {
-        super("Туристические маршруты");
-
-        TouristJournal turJornal = new TouristJournal("Журнал путевок");
-
+        super("Журнал");
+        
         array = turJornal.putTouristJournal();
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -41,10 +41,8 @@ public class GUI extends JFrame {
         for (int i = 0; i < array.length; i++)
             tableModel.addRow(array[i]);
 
-        String countries = "Всего маршрутов: " + Integer.toString(turJornal.size()) + " | "
-                + Integer.toString(turJornal.quantityItem());
-        JLabel statusLabel = new JLabel(countries);
-        statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        JLabel statusLabel = new JLabel(get_panel_info());
+        //statusLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
         this.setLocation(725, 300);
         JMenuBar menuBar = new JMenuBar();
@@ -75,6 +73,7 @@ public class GUI extends JFrame {
 
                 Box contents = new Box(BoxLayout.Y_AXIS);
                 getContentPane().add(contents);
+                statusLabel.setText(get_panel_info());
             }
         });
 
@@ -93,6 +92,7 @@ public class GUI extends JFrame {
                 table1.setAutoCreateRowSorter(true);
                 Box contents = new Box(BoxLayout.Y_AXIS);
                 getContentPane().add(contents);
+                statusLabel.setText(get_panel_info());
             }
         });
 
@@ -110,6 +110,7 @@ public class GUI extends JFrame {
 
                 Box contents = new Box(BoxLayout.Y_AXIS);
                 getContentPane().add(contents);
+                statusLabel.setText(get_panel_info());
             }
         });
 
@@ -127,6 +128,7 @@ public class GUI extends JFrame {
 
                 Box contents = new Box(BoxLayout.Y_AXIS);
                 getContentPane().add(contents);
+                statusLabel.setText(get_panel_info());
             }
         });
 
@@ -140,12 +142,12 @@ public class GUI extends JFrame {
             
             public void actionPerformed(ActionEvent e) {
 
-
+                try{
                 while(true){
                     String input = JOptionPane.showInputDialog("стоимость маршрута меньше заданной:");
                     if(input.length() > 0){
                         tableModel.setRowCount(0);
-                        array = turJornal.delete_condition(Integer.parseInt(input)).putTouristJournal();
+                        array = turJornal.delete_condition(Integer.parseInt(input)+1).putTouristJournal();
                         for (int i = 0; i < array.length; i++)
                             tableModel.addRow(array[i]);
 
@@ -155,9 +157,9 @@ public class GUI extends JFrame {
                         getContentPane().add(contents);
                         break;
                     }
-                }
+                }} catch (Exception exception) {}
                 
-                
+                statusLabel.setText(get_panel_info());
         }});
 
         function.add(delete_condition);
@@ -177,20 +179,23 @@ public class GUI extends JFrame {
                 table1.setAutoCreateRowSorter(true);
                 Box contents = new Box(BoxLayout.Y_AXIS);
                 getContentPane().add(contents);
+                statusLabel.setText(get_panel_info());
             }
         });
 
         function.add(low);
-
+        
         JMenuItem open = file.add(new JMenuItem("Открыть"));
         open.addActionListener(new ActionListener() { // Действие открытия
             @Override
             public void actionPerformed(ActionEvent e) {
+
+                
                 FileDialog fd = new FileDialog(frame, "Открыть", FileDialog.LOAD);
                 fd.setVisible(true);
                 
-                
-                TouristJournal turJornal = new TouristJournal((fd.getFile()));
+                turJornal.deleteAllT();
+                turJornal.setName(fd.getName());
                 BufferedReader open = null;
                 String[] data = new String[0];
                 String line;
@@ -231,9 +236,30 @@ public class GUI extends JFrame {
                     Box contents = new Box(BoxLayout.Y_AXIS);
                     getContentPane().add(contents);
                 
-                    statusLabel.setText("Всего маршрутов: " + Integer.toString(turJornal.size()) + " | "
-                            + Integer.toString(turJornal.quantityItem()));
+                    statusLabel.setText(get_panel_info());
                 }
+            }
+        });
+
+        JMenuItem edit_name = file.add(new JMenuItem("Изменить название"));
+
+        edit_name.addActionListener(new ActionListener() {
+            @Override
+
+            public void actionPerformed(ActionEvent e) {
+
+                try {
+                    while (true) {
+                        String input = JOptionPane.showInputDialog("Новое имя:");
+                        if (input.length() > 0) {
+                            turJornal.setName(input);
+                            break;
+                        }
+                    }
+                } catch (Exception exception) {
+                }
+
+                statusLabel.setText(get_panel_info());
             }
         });
 
@@ -243,11 +269,17 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 Writer writer = null;
                 try {
-                   
-                    FileDialog fd = new FileDialog(frame, "Открыть", FileDialog.SAVE);
-                    fd.setVisible(true);
-
-                    writer = new BufferedWriter(new FileWriter((String.format("%s%s%s", fd.getDirectory(), turJornal.getName(), ".txt" ))));
+                
+                    JFileChooser fch = new JFileChooser();
+                    fch.setDialogTitle("Выбор директории");
+                    // Определение режима - только каталог
+                    fch.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                    int result = fch.showOpenDialog(GUI.this);
+                    // Если директория выбрана, покажем ее в сообщении
+                    if (result == JFileChooser.APPROVE_OPTION)
+                        JOptionPane.showMessageDialog(GUI.this, fch.getSelectedFile());
+                    System.out.print(String.format("%s%s%s", fch.getSelectedFile(), turJornal.getName(), ".txt" ));
+                    writer = new BufferedWriter(new FileWriter((String.format("%s%s%s", fch.getSelectedFile()+"\\", turJornal.getName(), ".txt" ))));
                     
                     for (int n = 0; n < tableModel.getRowCount(); n++) { // тут хр. массив [][] из которого берем данны t
                         StringBuilder sb = new StringBuilder();
@@ -313,14 +345,13 @@ public class GUI extends JFrame {
                 Box contents = new Box(BoxLayout.Y_AXIS);
                 getContentPane().add(contents);
 
-                statusLabel.setText("Всего маршрутов: " + Integer.toString(turJornal.size()) + " | "
-                        + Integer.toString(turJornal.quantityItem()));
+                statusLabel.setText(get_panel_info());
                 
             }
         });
 
         table.add(update);
-
+        file.add(edit_name);
         file.addSeparator(); // Разделитель
         JMenuItem exit = file.add(new JMenuItem("Выйти")); // Кнопка выхода
 
@@ -355,7 +386,12 @@ public class GUI extends JFrame {
                 // Удаление выделенной строки
                 for (int n = idx + 1; n < tableModel.getRowCount(); n++)
                     tableModel.setValueAt(n, n, 0);
-                tableModel.removeRow(idx);
+                if (idx >= 0)
+                    tableModel.removeRow(idx);
+                else{
+                    JOptionPane.showMessageDialog(frame, "Выберете строку для удаления", "Ошибка выбора",
+                            JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
