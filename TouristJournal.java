@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.Map.Entry;
 
 public class TouristJournal {
     private final static String TJOURNAL_FORMAT_STRING = "Страна: %s, стоимость: %d";
@@ -20,150 +21,168 @@ public class TouristJournal {
         this.journal = new TreeMap<TouristKey, Integer>(comp);
     }
 
-    public void setName(String name) {this.name = name;}
-    public void setJournal(Map<TouristKey, Integer> journal) {this.journal = journal;}
-    
-    public String getName() {return name;}
-    public Map<TouristKey, Integer> getJournal() {return journal;}
-    
-    public String toString(){
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setJournal(Map<TouristKey, Integer> journal) {
+        this.journal = journal;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Map<TouristKey, Integer> getJournal() {
+        return journal;
+    }
+
+    public String toString() {
         return String.format(TJOURNAL_FORMAT_STRING, name, size());
     }
 
-    public boolean addTourist(TouristKey key, Integer n){
-        if(journal.containsKey(key)) return false;
+    public boolean addTourist(TouristKey key, Integer n) {
+        if (journal.containsKey(key))
+            return false;
         journal.put(key, n);
         return true;
     }
 
-    public boolean delTourist(TouristKey key){
-        if(journal.containsKey(key)){ journal.remove(key); return true;}
-        else return false;
+    public boolean delTourist(TouristKey key) {
+        if (journal.containsKey(key)) {
+            journal.remove(key);
+            return true;
+        } else
+            return false;
     }
 
-    public boolean delTourist(int id){
+    public boolean delTourist(int id) {
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
         Iterator<Map.Entry<TouristKey, Integer>> it = setS.iterator();
         int i = 0;
-        while(it.hasNext()){
+        while (it.hasNext()) {
             Map.Entry<TouristKey, Integer> keyVal = it.next();
-            if(keyVal.getKey().getId() == id){
+            if (keyVal.getKey().getId() == id) {
                 it.remove();
                 i = i + 1;
             }
         }
-        if(i == 0) return false;
+        if (i == 0)
+            return false;
         return true;
     }
 
-    public int quantityItem(){
+    public int quantityItem() {
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
         Iterator<Map.Entry<TouristKey, Integer>> it = setS.iterator();
         Set<String> quantity = new TreeSet<String>();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             Map.Entry<TouristKey, Integer> keyVal = it.next();
             quantity.add(keyVal.getKey().getName());
         }
         return (quantity.size());
     }
 
-    public boolean deleteAllT(){
+    public boolean deleteAllT() {
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
         Iterator<Map.Entry<TouristKey, Integer>> it = setS.iterator();
         int i = 0;
-        while(it.hasNext()){
+        while (it.hasNext()) {
             Map.Entry<TouristKey, Integer> keyVal = it.next();
-            if(keyVal.getKey().getId() > 0){
+            if (keyVal.getKey().getId() > 0) {
                 it.remove();
                 i = i + 1;
             }
         }
-        if(i == 0) return false;
+        if (i == 0)
+            return false;
         return true;
     }
 
-    
-
-    public TouristJournal delete_condition(int cost){
-        TouristJournal subSpoJou = new TouristJournal(String.format(""));
+    public TouristJournal delete_condition(int cost) {
+        TouristJournal subSpoJou = new TouristJournal();
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
-        for(Map.Entry<TouristKey, Integer> keyVal:setS)
-            if(keyVal.getKey().getCost() > cost)
+        for (Map.Entry<TouristKey, Integer> keyVal : setS)
+            if (keyVal.getKey().getCost() > cost)
                 subSpoJou.addTourist(keyVal.getKey(), keyVal.getValue());
         return subSpoJou;
     }
 
-
-     public boolean delSmallerTourist(int id){
+    public boolean delSmallerTourist(int id) {
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
         Iterator<Map.Entry<TouristKey, Integer>> it = setS.iterator();
         int i = 0;
-        while(it.hasNext()){
+        while (it.hasNext()) {
             Map.Entry<TouristKey, Integer> keyVal = it.next();
-            if(keyVal.getKey().getId() < id){
+            if (keyVal.getKey().getId() < id) {
                 it.remove();
                 i = i + 1;
             }
         }
-        if(i == 0) return false;
+        if (i == 0)
+            return false;
         return true;
     }
 
-    public boolean updateTourist(TouristKey key, Integer value){
-        if(!journal.containsKey(key)) return false;
-        journal.put(key,value);
+    public boolean updateTourist(TouristKey key, Integer value) {
+        if (!journal.containsKey(key))
+            return false;
+        journal.put(key, value);
         return true;
     }
 
-    public int size(){
+    public int size() {
         return journal.size();
     }
 
-    public TouristJournal selectTouristData(int id){
-        TouristJournal subSpoJou = new TouristJournal(String.format("%s: выборка по шифру %5d",name, id));
+    public TouristJournal selectTouristData(int id) {//выборка по id 
+        TouristJournal subSpoJou = new TouristJournal();
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
-        for(Map.Entry<TouristKey, Integer> keyVal:setS)
-            if(keyVal.getKey().getId() == id)
+        for (Map.Entry<TouristKey, Integer> keyVal : setS)
+            if (keyVal.getKey().getId() == id)
                 subSpoJou.addTourist(keyVal.getKey(), keyVal.getValue());
         return subSpoJou;
     }
 
-    public TouristJournal selectTeamCodeData(String code){
-        TouristJournal subSpoJou = new TouristJournal(String.format("%s: выборка по названию страны %s",name, code));
+    public TouristJournal selectTeamCodeData(String code) {//выборка по названию страны
+        TouristJournal subSpoJou = new TouristJournal();
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
-        for(Map.Entry<TouristKey,Integer> keyVal: setS)
-            if(keyVal.getKey().getName().equals(code))
+        for (Map.Entry<TouristKey, Integer> keyVal : setS)
+            if (keyVal.getKey().getName().equals(code))
                 subSpoJou.addTourist(keyVal.getKey(), keyVal.getValue());
         return subSpoJou;
     }
 
-    public TouristJournal selectTouristcostData(int id, int cost){
-        TouristJournal subSpoJou = new TouristJournal(String.format("%s: выборка по шифру %5d и стоимости %d", name, id, cost));
+    public TouristJournal selectTouristcostData(int id, int cost) {//выборка по id и стоисости
+        TouristJournal subSpoJou = new TouristJournal();
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
-        for(Map.Entry<TouristKey, Integer> keyVal:setS)
+        for (Map.Entry<TouristKey, Integer> keyVal : setS)
             if ((keyVal.getKey().getId() == id))
                 subSpoJou.addTourist(keyVal.getKey(), keyVal.getValue());
         return subSpoJou;
     }
 
-    public TouristJournal sortScoreDesc(){
-        TouristJournal subSpoJou = new TouristJournal(String.format("%s:\n\t сортировка по убыванию цен", name), new CompScoreDesc(this.journal));
+    public TouristJournal sortScoreDesc() {//сортировка по убыванию цен
+        TouristJournal subSpoJou = new TouristJournal("",
+                new CompScoreDesc(this.journal));
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
-        for(Map.Entry<TouristKey, Integer> keyVal: setS)
+        for (Map.Entry<TouristKey, Integer> keyVal : setS)
             subSpoJou.addTourist(keyVal.getKey(), keyVal.getValue());
         return subSpoJou;
     }
 
-    public TouristJournal sortNameDesc(){
-        TouristJournal subSpoJou = new TouristJournal(String.format("%s:\n\t сортировка по возрастанию страны и убыванию названия страны", name), new CompNameDesc());
+    public TouristJournal sortNameDesc() {//сортировка по названию, убывание.
+        TouristJournal subSpoJou = new TouristJournal("",new CompNameDesc());
+
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
-        for(Map.Entry<TouristKey, Integer> keyVal: setS)
+        for (Map.Entry<TouristKey, Integer> keyVal : setS)
             subSpoJou.addTourist(keyVal.getKey(), keyVal.getValue());
         return subSpoJou;
+        
     }
 
-    public TouristJournal sortCostDesc() {
-        TouristJournal subSpoJou = new TouristJournal(String.format("%s:\n\t сортировка по возрастанию названию страны и убыванию стоимости", name), new CompCostDesc());
+    public TouristJournal sortCostDesc() {//сортировка по стоимости, убывание. 
+        TouristJournal subSpoJou = new TouristJournal("", new CompCostDesc());
         Set<Map.Entry<TouristKey, Integer>> setS = journal.entrySet();
         for(Map.Entry<TouristKey, Integer> keyVal: setS)
             subSpoJou.addTourist(keyVal.getKey(), keyVal.getValue());
@@ -172,9 +191,7 @@ public class TouristJournal {
    
     public TouristJournal cheapest_trips() {
         String[] data = new String[0];
-        TouristJournal subSpoJou = new TouristJournal(
-                String.format("%s:\n\t сортировка по возрастанию названию страны и убыванию стоимости", name),
-                new CompCostDesc());
+        TouristJournal subSpoJou = new TouristJournal("",new CompCostDesc());
         String[][] temp_data = subSpoJou.returnTouristJournalarray();
         
         subSpoJou.deleteAllT();

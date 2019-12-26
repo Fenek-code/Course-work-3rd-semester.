@@ -89,7 +89,7 @@ public class GUI extends JFrame {
                     tableModel.addRow(array[i]);
 
                 table1.setModel(tableModel);
-                table1.setAutoCreateRowSorter(true);
+                //table1.setAutoCreateRowSorter(true);
                 Box contents = new Box(BoxLayout.Y_AXIS);
                 getContentPane().add(contents);
                 statusLabel.setText(get_panel_info());
@@ -152,7 +152,7 @@ public class GUI extends JFrame {
                             tableModel.addRow(array[i]);
 
                         table1.setModel(tableModel);
-                        table1.setAutoCreateRowSorter(true);
+                        //table1.setAutoCreateRowSorter(true);
                         Box contents = new Box(BoxLayout.Y_AXIS);
                         getContentPane().add(contents);
                         break;
@@ -176,7 +176,7 @@ public class GUI extends JFrame {
                     tableModel.addRow(array[i]);
 
                 table1.setModel(tableModel);
-                table1.setAutoCreateRowSorter(true);
+                //table1.setAutoCreateRowSorter(true);
                 Box contents = new Box(BoxLayout.Y_AXIS);
                 getContentPane().add(contents);
                 statusLabel.setText(get_panel_info());
@@ -195,7 +195,9 @@ public class GUI extends JFrame {
                 fd.setVisible(true);
                 
                 turJornal.deleteAllT();
-                turJornal.setName(fd.getName());
+                String fileName = fd.getFile();
+                fileName = fileName.substring(0, fileName.lastIndexOf('.'));
+                turJornal.setName(fileName);
                 BufferedReader open = null;
                 String[] data = new String[0];
                 String line;
@@ -220,7 +222,7 @@ public class GUI extends JFrame {
                                     new TouristKey(Integer.parseInt(data[0]), 
                                     data[1], 
                                     Integer.parseInt(data[2])),
-                                    Integer.parseInt(data[0]));
+                                    Integer.parseInt(data[2]));
 
                         }
                     } 
@@ -275,10 +277,8 @@ public class GUI extends JFrame {
                     // Определение режима - только каталог
                     fch.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                     int result = fch.showOpenDialog(GUI.this);
-                    // Если директория выбрана, покажем ее в сообщении
-                    if (result == JFileChooser.APPROVE_OPTION)
-                        JOptionPane.showMessageDialog(GUI.this, fch.getSelectedFile());
-                    System.out.print(String.format("%s%s%s", fch.getSelectedFile(), turJornal.getName(), ".txt" ));
+                    
+                    if (result == JFileChooser.APPROVE_OPTION){}
                     writer = new BufferedWriter(new FileWriter((String.format("%s%s%s", fch.getSelectedFile()+"\\", turJornal.getName(), ".txt" ))));
                     
                     for (int n = 0; n < tableModel.getRowCount(); n++) { // тут хр. массив [][] из которого берем данны t
@@ -364,7 +364,7 @@ public class GUI extends JFrame {
 
         // Создание таблицы на основании модели данных
         table1 = new JTable(tableModel);
-        table1.setAutoCreateRowSorter(true);
+        //table1.setAutoCreateRowSorter(true);
         // Создание кнопки добавления строки таблицы
         JButton add = new JButton("Добавить");
         add.addActionListener(new ActionListener() {
